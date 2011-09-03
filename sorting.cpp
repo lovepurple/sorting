@@ -1,11 +1,104 @@
 #include <iostream>
+#include <cstdlib>
 #include <string>
 #include <sys/time.h>
 using namespace std;
 
+// Sort function typedef
 typedef void (*SortFunction)(int*, int);
 
+// Function prototypes - documentation in declarations
 void RunTestSuite();
+void PrintArray(int*, int);
+int *RandomArray(int, int);
+int *CopyArray(int*, int);
+void PrintTimeDiff(timeval, timeval);
+void swap(int*, int, int);
+void InsertionSort(int*, int);
+void Merge(int*, int, int, int);
+void RecursiveMergeSort(int*, int, int);
+void MergeSort(int*, int);
+void HeapifyElement(int*, int, int);
+void Heapify(int*, int);
+void HeapSort(int*, int);
+void QuickSort(int*, int);
+int  MaxValue(int*, int);
+void CountingSort(int*, int);
+void RadixSort(int*, int);
+void BucketSort(int*, int);
+
+int main() {
+    /*
+    int size = 20;
+    int *test = RandomArray(size, 99);
+    
+    PrintArray(test, size);
+    CountingSort(test, size);
+    PrintArray(test, size);
+    */
+
+    RunTestSuite();
+
+    return 0;
+}
+
+void RunTestSuite()
+{
+    const int NUM_SORT_FUNCS = 3;
+    const int MAX_KEY_VALUE = 500;
+    const int NUM_TESTS = 11;
+    const int NUM_SAMPLES = 5;
+    const int TEST_SIZES[] = {10, 50, 100, 
+                       500, 1000, 5000,  
+                       10000, 50000, 100000, 
+                       500000, 1000000};
+
+    
+    /*
+    const string sortFuncNames[] = {"Insertion Sort", "Merge Sort", "Heap Sort",
+                              "Quick Sort", "Counting Sort", "Radix Sort", 
+                              "Bucket Sort"};
+    
+    const SortFunction sortFuncs[] = {InsertionSort, MergeSort, HeapSort,
+                            QuickSort, CountingSort, RadixSort, 
+                            BucketSort};
+    */
+
+    const string sortFuncNames[] = {"Merge Sort", "Heap Sort", "Counting Sort"};
+    const SortFunction sortFuncs[] = {MergeSort, HeapSort, CountingSort};
+    
+    timeval start, end;
+    int *tmpArray;
+
+    for (int i = 0; i < NUM_TESTS; i++) {
+        int N = TEST_SIZES[i];
+        cout << "Sorting with N=" << N << endl;
+
+        // Generate random samples
+        int **randArrays = new int*[NUM_SAMPLES];
+        for (int i = 0; i < NUM_SAMPLES; i++)
+            randArrays[i] = RandomArray(N, MAX_KEY_VALUE);
+        
+        for (int j = 0; j < NUM_SORT_FUNCS; j++) {
+            cout << "\t" << sortFuncNames[j] << endl;
+            for (int k = 0; k < NUM_SAMPLES; k++) {
+                tmpArray = CopyArray(randArrays[k], N);
+                gettimeofday(&start, NULL);
+                (*sortFuncs[j])(tmpArray, N);
+                gettimeofday(&end, NULL);
+                PrintTimeDiff(start, end);
+                delete[] tmpArray;
+            }
+        }
+
+        cout << endl;
+
+        for (int j = 0; j < NUM_SAMPLES; j++)
+            delete[] randArrays[j];
+        delete[] randArrays;
+    }
+}
+
 void PrintArray(int *ary, int size) {
     for (int i = 0; i < size; i++) {
         cout << ary[i] << " ";
@@ -192,76 +285,4 @@ void RadixSort(int *ary, int size) {
 
 void BucketSort(int *ary, int size) {
 
-}
-
-
-int main() {
-    /*
-    int size = 20;
-    int *test = RandomArray(size, 99);
-    
-    PrintArray(test, size);
-    CountingSort(test, size);
-    PrintArray(test, size);
-    */
-
-    RunTestSuite();
-
-    return 0;
-}
-
-void RunTestSuite()
-{
-    const int NUM_SORT_FUNCS = 3;
-    const int MAX_KEY_NUM = 500;
-    const int NUM_TESTS = 11;
-    const int NUM_SAMPLES = 2;
-    const int TEST_SIZES[] = {10, 50, 100, 
-                       500, 1000, 5000,  
-                       10000, 50000, 100000, 
-                       500000, 1000000};
-
-    
-    /*
-    const string sortFuncNames[] = {"Insertion Sort", "Merge Sort", "Heap Sort",
-                              "Quick Sort", "Counting Sort", "Radix Sort", 
-                              "Bucket Sort"};
-    
-    const SortFunction sortFuncs[] = {InsertionSort, MergeSort, HeapSort,
-                            QuickSort, CountingSort, RadixSort, 
-                            BucketSort};
-    */
-
-    const string sortFuncNames[] = {"Merge Sort", "Heap Sort", "Counting Sort"};
-    const SortFunction sortFuncs[] = {MergeSort, HeapSort, CountingSort};
-    
-    timeval start, end;
-    int *tmpArray;
-
-    for (int i = 0; i < NUM_TESTS; i++) {
-        int N = TEST_SIZES[i];
-        cout << "Sorting with N=" << N << endl;
-
-        int **randArrays = new int*[NUM_SAMPLES];
-        for (int i = 0; i < NUM_SAMPLES; i++)
-            randArrays[i] = RandomArray(N, MAX_KEY_NUM);
-
-        for (int j = 0; j < NUM_SORT_FUNCS; j++) {
-            cout << "\t" << sortFuncNames[j] << endl;
-            for (int k = 0; k < NUM_SAMPLES; k++) {
-                tmpArray = CopyArray(randArrays[k], N);
-                gettimeofday(&start, NULL);
-                (*sortFuncs[j])(tmpArray, N);
-                gettimeofday(&end, NULL);
-                PrintTimeDiff(start, end);
-                delete[] tmpArray;
-            }
-        }
-
-        cout << endl;
-
-        for (int j = 0; j < NUM_SAMPLES; j++)
-            delete[] randArrays[j];
-        delete[] randArrays;
-    }
 }
