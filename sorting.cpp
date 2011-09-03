@@ -8,6 +8,7 @@ using namespace std;
 typedef void (*SortFunction)(int*, int);
 
 // Function prototypes - documentation in declarations
+void SingleTest(SortFunction, int, int);
 void RunTestSuite();
 void PrintArray(int*, int);
 int *RandomArray(int, int);
@@ -30,18 +31,21 @@ void RadixSort(int*, int);
 void BucketSort(int*, int);
 
 int main() {
-    /*
-    int size = 20;
-    int *test = RandomArray(size, 99);
-    
-    PrintArray(test, size);
-    QuickSort(test, size);
-    PrintArray(test, size);
-    */
 
     RunTestSuite();
+//    SingleTest(QuickSort, 20, 100);
 
     return 0;
+}
+
+void SingleTest(SortFunction func, int size, int maxKey) {
+    int *test = RandomArray(size, maxKey);
+    
+    PrintArray(test, size);
+    (*func)(test, size);
+    PrintArray(test, size);
+
+    delete[] test;
 }
 
 void RunTestSuite()
