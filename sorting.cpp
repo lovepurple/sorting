@@ -1,6 +1,9 @@
 #include <iostream>
+#include <string>
 #include <sys/time.h>
 using namespace std;
+
+typedef void (*SortFunction)(int*, int);
 
 void RunTestSuite();
 void PrintArray(int *ary, int size) {
@@ -38,7 +41,7 @@ void PrintTimeDiff(timeval start, timeval end) {
 
     double mtime = ((seconds) + useconds/1000000.0);
 
-    cout << "\t\t" << mtime << endl;
+    cout << "\t\t" << mtime << " secs" << endl;
 }
 
 void swap(int *ary, int loc1, int loc2) {
@@ -209,113 +212,55 @@ int main() {
 
 void RunTestSuite()
 {
-    timeval start, end;
-    int maxNum = 50;
-    int tests = 11;
-    int samples = 5;
-    int testSizes[] = {10, 50, 100, 
+    const int NUM_SORT_FUNCS = 3;
+    const int MAX_KEY_NUM = 500;
+    const int NUM_TESTS = 11;
+    const int NUM_SAMPLES = 2;
+    const int TEST_SIZES[] = {10, 50, 100, 
                        500, 1000, 5000,  
                        10000, 50000, 100000, 
                        500000, 1000000};
-    
 
-    for (int i = 0; i < tests; i++) {
-        int N = testSizes[i];
+    
+    /*
+    const string sortFuncNames[] = {"Insertion Sort", "Merge Sort", "Heap Sort",
+                              "Quick Sort", "Counting Sort", "Radix Sort", 
+                              "Bucket Sort"};
+    
+    const SortFunction sortFuncs[] = {InsertionSort, MergeSort, HeapSort,
+                            QuickSort, CountingSort, RadixSort, 
+                            BucketSort};
+    */
+
+    const string sortFuncNames[] = {"Merge Sort", "Heap Sort", "Counting Sort"};
+    const SortFunction sortFuncs[] = {MergeSort, HeapSort, CountingSort};
+    
+    timeval start, end;
+    int *tmpArray;
+
+    for (int i = 0; i < NUM_TESTS; i++) {
+        int N = TEST_SIZES[i];
         cout << "Sorting with N=" << N << endl;
 
-        int **randArrays = new int*[samples];
-        for (int i = 0; i < samples; i++)
-            randArrays[i] = RandomArray(N, maxNum);
+        int **randArrays = new int*[NUM_SAMPLES];
+        for (int i = 0; i < NUM_SAMPLES; i++)
+            randArrays[i] = RandomArray(N, MAX_KEY_NUM);
 
-        int *tmpArray;
-        
-        /*
-        // Insetion Sort
-        cout << "\tInsertion Sort" << endl;
-        for (int j = 0; j < samples; j++) {
-            tmpArray = CopyArray(randArrays[j], N);
-            gettimeofday(&start, NULL);
-            InsertionSort(tmpArray, N);
-            gettimeofday(&end, NULL);
-            PrintTimeDiff(start, end);
-            delete[] tmpArray;
+        for (int j = 0; j < NUM_SORT_FUNCS; j++) {
+            cout << "\t" << sortFuncNames[j] << endl;
+            for (int k = 0; k < NUM_SAMPLES; k++) {
+                tmpArray = CopyArray(randArrays[k], N);
+                gettimeofday(&start, NULL);
+                (*sortFuncs[j])(tmpArray, N);
+                gettimeofday(&end, NULL);
+                PrintTimeDiff(start, end);
+                delete[] tmpArray;
+            }
         }
-        */
-
-        // Merge Sort
-        cout << "\tMerge Sort" << endl;
-        for (int j = 0; j < samples; j++) {
-            tmpArray = CopyArray(randArrays[j], N);
-            gettimeofday(&start, NULL);
-            MergeSort(tmpArray, N);
-            gettimeofday(&end, NULL);
-            PrintTimeDiff(start, end);
-            
-            delete[] tmpArray;
-        }
-
-        // Heap Sort
-        cout << "\tHeap Sort" << endl;;
-        for (int j = 0; j < samples; j++) {
-            tmpArray = CopyArray(randArrays[j], N);
-            gettimeofday(&start, NULL);
-            HeapSort(tmpArray, N);
-            gettimeofday(&end, NULL);
-            PrintTimeDiff(start, end);
-            delete[] tmpArray;
-        }
-
-        /*
-        // Quick Sort
-        cout << "\tQuick Sort" << endl;
-        for (int j = 0; j < samples; j++) {
-            tmpArray = CopyArray(randArrays[j], N);
-            gettimeofday(&start, NULL);
-            QuickSort(tmpArray, N);
-            gettimeofday(&end, NULL);
-            PrintTimeDiff(start, end);
-            delete[] tmpArray;
-        }
-        */
-
-        // Counting Sort
-        cout << "\tCounting Sort" << endl;
-        for (int j = 0; j < samples; j++) {
-            tmpArray = CopyArray(randArrays[j], N);
-            gettimeofday(&start, NULL);
-            CountingSort(tmpArray, N);
-            gettimeofday(&end, NULL);
-            PrintTimeDiff(start, end);
-            delete[] tmpArray;
-        }
-    
-        /*
-        // Radix Sort
-        cout << "\tRadix Sort" << endl;;
-        for (int j = 0; j < samples; j++) {
-            tmpArray = CopyArray(randArrays[j], N);
-            gettimeofday(&start, NULL);
-            RadixSort(tmpArray, N);
-            gettimeofday(&end, NULL);
-            PrintTimeDiff(start, end);
-            delete[] tmpArray;
-        }
-        
-        // Bucket Sort
-        cout << "\tBucket Sort" << endl;
-        for (int j = 0; j < samples; j++) {
-            tmpArray = CopyArray(randArrays[j], N);
-            gettimeofday(&start, NULL);
-            BucketSort(tmpArray, N);
-            gettimeofday(&end, NULL);
-            PrintTimeDiff(start, end);
-            delete[] tmpArray;
-        }
-        */
 
         cout << endl;
 
-        for (int j = 0; j < samples; j++)
+        for (int j = 0; j < NUM_SAMPLES; j++)
             delete[] randArrays[j];
         delete[] randArrays;
     }
