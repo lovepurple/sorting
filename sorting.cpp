@@ -13,7 +13,7 @@ void PrintArray(int*, int);
 int *RandomArray(int, int);
 int *CopyArray(int*, int);
 void PrintTimeDiff(timeval, timeval);
-void swap(int*, int, int);
+void swap(int*, int*);
 void InsertionSort(int*, int);
 void Merge(int*, int, int, int);
 void RecursiveMergeSort(int*, int, int);
@@ -21,6 +21,8 @@ void MergeSort(int*, int);
 void HeapifyElement(int*, int, int);
 void Heapify(int*, int);
 void HeapSort(int*, int);
+int QuickSortPartition(int*, int, int, int);
+void RecursiveQuickSort(int*, int, int);
 void QuickSort(int*, int);
 int  MaxValue(int*, int);
 void CountingSort(int*, int);
@@ -33,7 +35,7 @@ int main() {
     int *test = RandomArray(size, 99);
     
     PrintArray(test, size);
-    CountingSort(test, size);
+    QuickSort(test, size);
     PrintArray(test, size);
     */
 
@@ -64,8 +66,10 @@ void RunTestSuite()
                             BucketSort};
     */
 
-    const string sortFuncNames[] = {"Merge Sort", "Heap Sort", "Counting Sort"};
-    const SortFunction sortFuncs[] = {MergeSort, HeapSort, CountingSort};
+    const string sortFuncNames[] = {"Merge Sort", "Heap Sort", "Quick Sort", 
+                                    "Counting Sort"};
+    const SortFunction sortFuncs[] = {MergeSort, HeapSort, QuickSort,
+                                      CountingSort};
     
     timeval start, end;
     int *tmpArray;
@@ -137,10 +141,10 @@ void PrintTimeDiff(timeval start, timeval end) {
     cout << "\t\t" << mtime << " secs" << endl;
 }
 
-void swap(int *ary, int loc1, int loc2) {
-    int tmp = ary[loc1];
-    ary[loc1] = ary[loc2];
-    ary[loc2] = tmp;
+void swap(int *loc1, int *loc2) {
+    int tmp = *loc1;
+    *loc1 = *loc2;
+    *loc2 = tmp;
 }
 
 void InsertionSort(int *ary, int size) {
@@ -219,7 +223,7 @@ void HeapifyElement(int *ary, int size, int loc) {
 
         // Swap if necessary
         if (loc != toSwap) {
-            swap(ary, loc, toSwap);
+            swap(&ary[loc], &ary[toSwap]);
             loc = toSwap;
             child = loc * 2 + 1;
         } else 
@@ -238,13 +242,39 @@ void HeapSort(int *ary, int size) {
     Heapify(ary, size);
     
     while (size > 0) {
-        swap(ary, 0, --size);
+        swap(&ary[0], &ary[--size]);
         HeapifyElement(ary, size, 0);
     }
 }
 
-void QuickSort(int *ary, int size) {
+int QuickSortPartition(int *ary, int start, int end, int pivotIndex) {
+    int pivot = ary[pivotIndex];
+    int index = start;
+    
+    swap(&ary[pivotIndex], &ary[end]);
+    
+    for (int i = start; i < end; i++)
+        if (ary[i] < pivot)
+            swap(&ary[i], &ary[index++]);
+   
+    swap(&ary[index], &ary[end]);
 
+    return index;
+}
+
+void RecursiveQuickSort(int *ary, int start, int end) {
+    if (start < end) {
+        int pivotIndex = start;
+
+        pivotIndex = QuickSortPartition(ary, start, end, pivotIndex);
+
+        RecursiveQuickSort(ary, start, pivotIndex - 1);
+        RecursiveQuickSort(ary, pivotIndex + 1, end);
+    }
+}
+
+void QuickSort(int *ary, int size) {
+    RecursiveQuickSort(ary, 0, size - 1);
 }
 
 int MaxValue(int *ary, int size) {
@@ -280,9 +310,10 @@ void CountingSort(int *ary, int size) {
 }
 
 void RadixSort(int *ary, int size) {
-
+    //TODO: Radix Sort
 }
 
 void BucketSort(int *ary, int size) {
-
+    int maxNum = MaxValue(ary, size);
+    cout << maxNum << endl;
 }
