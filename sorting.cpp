@@ -1,5 +1,4 @@
 #include <iostream>
-#include <time.h>
 #include <sys/time.h>
 using namespace std;
 
@@ -13,8 +12,10 @@ void PrintArray(int *ary, int size) {
 
 int *RandomArray(int size, int maxRandNum) {
     int *randArray = new int[size];
-    
-    srand((unsigned)time(0));
+    timeval timeseed;
+    gettimeofday(&timeseed, NULL);
+
+    srand(timeseed.tv_usec);
     for (int i = 0; i < size; i++) {
         randArray[i] = (rand() % maxRandNum) + 1;
     }
@@ -211,92 +212,111 @@ void RunTestSuite()
     timeval start, end;
     int maxNum = 50;
     int tests = 11;
+    int samples = 5;
     int testSizes[] = {10, 50, 100, 
                        500, 1000, 5000,  
                        10000, 50000, 100000, 
                        500000, 1000000};
     
 
-    for (int i = 0; i < 11; i++) {
+    for (int i = 0; i < tests; i++) {
         int N = testSizes[i];
         cout << "Sorting with N=" << N << endl;
 
-        int *randArray = RandomArray(N, maxNum);
-        int *tmpArray;
+        int **randArrays = new int*[samples];
+        for (int i = 0; i < samples; i++)
+            randArrays[i] = RandomArray(N, maxNum);
 
+        int *tmpArray;
+        
         /*
         // Insetion Sort
         cout << "\tInsertion Sort" << endl;
-        tmpArray = CopyArray(randArray, N);
-        gettimeofday(&start, NULL);
-        InsertionSort(tmpArray, N);
-        gettimeofday(&end, NULL);
-        PrintTimeDiff(start, end);
-        delete[] tmpArray;
+        for (int j = 0; j < samples; j++) {
+            tmpArray = CopyArray(randArrays[j], N);
+            gettimeofday(&start, NULL);
+            InsertionSort(tmpArray, N);
+            gettimeofday(&end, NULL);
+            PrintTimeDiff(start, end);
+            delete[] tmpArray;
+        }
         */
 
         // Merge Sort
         cout << "\tMerge Sort" << endl;
-        for (int j = 0; j < 10; j++) {
-            tmpArray = CopyArray(randArray, N);
+        for (int j = 0; j < samples; j++) {
+            tmpArray = CopyArray(randArrays[j], N);
             gettimeofday(&start, NULL);
             MergeSort(tmpArray, N);
+            gettimeofday(&end, NULL);
+            PrintTimeDiff(start, end);
+            
+            delete[] tmpArray;
+        }
+
+        // Heap Sort
+        cout << "\tHeap Sort" << endl;;
+        for (int j = 0; j < samples; j++) {
+            tmpArray = CopyArray(randArrays[j], N);
+            gettimeofday(&start, NULL);
+            HeapSort(tmpArray, N);
+            gettimeofday(&end, NULL);
+            PrintTimeDiff(start, end);
+            delete[] tmpArray;
+        }
+
+        /*
+        // Quick Sort
+        cout << "\tQuick Sort" << endl;
+        for (int j = 0; j < samples; j++) {
+            tmpArray = CopyArray(randArrays[j], N);
+            gettimeofday(&start, NULL);
+            QuickSort(tmpArray, N);
+            gettimeofday(&end, NULL);
+            PrintTimeDiff(start, end);
+            delete[] tmpArray;
+        }
+        */
+
+        // Counting Sort
+        cout << "\tCounting Sort" << endl;
+        for (int j = 0; j < samples; j++) {
+            tmpArray = CopyArray(randArrays[j], N);
+            gettimeofday(&start, NULL);
+            CountingSort(tmpArray, N);
+            gettimeofday(&end, NULL);
+            PrintTimeDiff(start, end);
+            delete[] tmpArray;
+        }
+    
+        /*
+        // Radix Sort
+        cout << "\tRadix Sort" << endl;;
+        for (int j = 0; j < samples; j++) {
+            tmpArray = CopyArray(randArrays[j], N);
+            gettimeofday(&start, NULL);
+            RadixSort(tmpArray, N);
             gettimeofday(&end, NULL);
             PrintTimeDiff(start, end);
             delete[] tmpArray;
         }
         
-        // Heap Sort
-        cout << "\tHeap Sort" << endl;;
-        tmpArray = CopyArray(randArray, N);
-        gettimeofday(&start, NULL);
-        HeapSort(tmpArray, N);
-        gettimeofday(&end, NULL);
-        PrintTimeDiff(start, end);
-        delete[] tmpArray;
-        
-        /*
-        // Quick Sort
-        cout << "\tQuick Sort" << endl;
-        tmpArray = CopyArray(randArray, N);
-        gettimeofday(&start, NULL);
-        QuickSort(tmpArray, N);
-        gettimeofday(&end, NULL);
-        PrintTimeDiff(start, end);
-        delete[] tmpArray;
-        */
-
-        // Counting Sort
-        cout << "\tCounting Sort" << endl;
-        tmpArray = CopyArray(randArray, N);
-        gettimeofday(&start, NULL);
-        CountingSort(tmpArray, N);
-        gettimeofday(&end, NULL);
-        PrintTimeDiff(start, end);
-        delete[] tmpArray;
-        
-        /*
-        // Radix Sort
-        cout << "\tRadix Sort" << endl;;
-        tmpArray = CopyArray(randArray, N);
-        gettimeofday(&start, NULL);
-        RadixSort(tmpArray, N);
-        gettimeofday(&end, NULL);
-        PrintTimeDiff(start, end);
-        delete[] tmpArray;
-        
         // Bucket Sort
         cout << "\tBucket Sort" << endl;
-        tmpArray = CopyArray(randArray, N);
-        gettimeofday(&start, NULL);
-        BucketSort(tmpArray, N);
-        gettimeofday(&end, NULL);
-        PrintTimeDiff(start, end);
-        delete[] tmpArray;
+        for (int j = 0; j < samples; j++) {
+            tmpArray = CopyArray(randArrays[j], N);
+            gettimeofday(&start, NULL);
+            BucketSort(tmpArray, N);
+            gettimeofday(&end, NULL);
+            PrintTimeDiff(start, end);
+            delete[] tmpArray;
+        }
         */
 
         cout << endl;
 
-        delete[] randArray;
+        for (int j = 0; j < samples; j++)
+            delete[] randArrays[j];
+        delete[] randArrays;
     }
 }
