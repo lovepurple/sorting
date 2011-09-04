@@ -47,7 +47,7 @@ void SingleTest(SortFunction func, int size, int maxKey) {
 
 void RunTestSuite()
 {
-    const int NUM_SORT_FUNCS = 3;
+    const int NUM_SORT_FUNCS = 4;
     const int MAX_KEY_VALUE = 500;
     const int NUM_TESTS = 11;
     const int NUM_SAMPLES = 10;
@@ -85,7 +85,7 @@ void RunTestSuite()
             randArrays[i] = RandomArray(N, MAX_KEY_VALUE);
         
         for (int j = 0; j < NUM_SORT_FUNCS; j++) {
-            cout << "\t" << sortFuncNames[j] << endl;
+            cout << sortFuncNames[j] << '\t';
             for (int k = 0; k < NUM_SAMPLES; k++) {
                 tmpArray = CopyArray(randArrays[k], N);
                 gettimeofday(&start, NULL);
@@ -94,6 +94,7 @@ void RunTestSuite()
                 PrintTimeDiff(start, end);
                 delete[] tmpArray;
             }
+            cout << endl;
         }
 
         cout << endl;
@@ -137,9 +138,10 @@ void PrintTimeDiff(timeval start, timeval end) {
     long seconds  = end.tv_sec  - start.tv_sec;
     long useconds = end.tv_usec - start.tv_usec;
 
-    double mtime = ((seconds) + useconds/1000000.0);
+    //double mtime = ((seconds) + useconds/1000000.0);
+    long mtime = ((seconds*1000000) + useconds);
 
-    cout << "\t\t" << mtime << " secs" << endl;
+    cout << "\t" << mtime;
 }
 
 void InsertionSort(int *ary, int size) {
