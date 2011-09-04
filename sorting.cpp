@@ -14,7 +14,6 @@ void PrintArray(int*, int);
 int *RandomArray(int, int);
 int *CopyArray(int*, int);
 void PrintTimeDiff(timeval, timeval);
-void swap(int*, int*);
 void InsertionSort(int*, int);
 void Merge(int*, int, int, int);
 void RecursiveMergeSort(int*, int, int);
@@ -33,7 +32,7 @@ void BucketSort(int*, int);
 int main() {
 
     RunTestSuite();
-//    SingleTest(QuickSort, 20, 100);
+//    SingleTest(HeapSort, 20, 100);
 
     return 0;
 }
@@ -53,7 +52,7 @@ void RunTestSuite()
     const int NUM_SORT_FUNCS = 3;
     const int MAX_KEY_VALUE = 500;
     const int NUM_TESTS = 11;
-    const int NUM_SAMPLES = 5;
+    const int NUM_SAMPLES = 10;
     const int TEST_SIZES[] = {10, 50, 100, 
                        500, 1000, 5000,  
                        10000, 50000, 100000, 
@@ -145,12 +144,6 @@ void PrintTimeDiff(timeval start, timeval end) {
     cout << "\t\t" << mtime << " secs" << endl;
 }
 
-void swap(int *loc1, int *loc2) {
-    int tmp = *loc1;
-    *loc1 = *loc2;
-    *loc2 = tmp;
-}
-
 void InsertionSort(int *ary, int size) {
     for (int i = 1; i < size; i++) {
         int key = ary[i];
@@ -211,6 +204,7 @@ void MergeSort(int *ary, int size) {
 
 void HeapifyElement(int *ary, int size, int loc) {
 
+    int tmp;
     int toSwap = loc;
     int child = loc * 2 + 1;
 
@@ -227,7 +221,10 @@ void HeapifyElement(int *ary, int size, int loc) {
 
         // Swap if necessary
         if (loc != toSwap) {
-            swap(&ary[loc], &ary[toSwap]);
+            tmp = ary[loc];
+            ary[loc] = ary[toSwap];
+            ary[toSwap] = tmp;
+            
             loc = toSwap;
             child = loc * 2 + 1;
         } else 
@@ -243,10 +240,14 @@ void Heapify(int *ary, int size) {
 }
 
 void HeapSort(int *ary, int size) {
+    int tmp;
     Heapify(ary, size);
     
     while (size > 0) {
-        swap(&ary[0], &ary[--size]);
+        tmp = ary[0];
+        ary[0] = ary[--size];
+        ary[size] = tmp;
+        
         HeapifyElement(ary, size, 0);
     }
 }
@@ -254,14 +255,24 @@ void HeapSort(int *ary, int size) {
 int QuickSortPartition(int *ary, int start, int end, int pivotIndex) {
     int pivot = ary[pivotIndex];
     int index = start;
-    
-    swap(&ary[pivotIndex], &ary[end]);
+    int tmp;
+
+    tmp = ary[pivotIndex];
+    ary[pivotIndex] = ary[end];
+    ary[end] = tmp;
+
     
     for (int i = start; i < end; i++)
-        if (ary[i] < pivot)
-            swap(&ary[i], &ary[index++]);
+        if (ary[i] < pivot) {
+            tmp = ary[i];
+            ary[i] = ary[index];
+            ary[index] = tmp;
+            index++;
+        }
    
-    swap(&ary[index], &ary[end]);
+    tmp = ary[index];
+    ary[index] = ary[end];
+    ary[end] = tmp;
 
     return index;
 }
