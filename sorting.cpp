@@ -252,40 +252,28 @@ void HeapSort(int *ary, int size) {
     }
 }
 
-int QuickSortPartition(int *ary, int start, int end, int pivotIndex) {
-    int pivot = ary[pivotIndex];
-    int index = start;
-    int tmp;
-
-    tmp = ary[pivotIndex];
-    ary[pivotIndex] = ary[end];
-    ary[end] = tmp;
-
-    
-    for (int i = start; i < end; i++)
-        if (ary[i] < pivot) {
-            tmp = ary[i];
-            ary[i] = ary[index];
-            ary[index] = tmp;
-            index++;
-        }
-   
-    tmp = ary[index];
-    ary[index] = ary[end];
-    ary[end] = tmp;
-
-    return index;
-}
-
 void RecursiveQuickSort(int *ary, int start, int end) {
-    if (start < end) {
-        int pivotIndex = start;
-
-        pivotIndex = QuickSortPartition(ary, start, end, pivotIndex);
-
-        RecursiveQuickSort(ary, start, pivotIndex - 1);
-        RecursiveQuickSort(ary, pivotIndex + 1, end);
-    }
+    int i = start, 
+        j = end,
+        pivot = ary[(start + end) / 2],
+        tmp;
+ 
+    while (i <= j) {
+        while (ary[i] < pivot)
+            i++;
+        while (ary[j] > pivot)
+            j--;
+        if (i <= j) {
+            tmp = ary[i];
+            ary[i++] = ary[j];
+            ary[j--] = tmp;
+        }
+    };
+ 
+    if (start < j)
+        RecursiveQuickSort(ary, start, j);
+    if (i < end)
+        RecursiveQuickSort(ary, i, end);
 }
 
 void QuickSort(int *ary, int size) {
