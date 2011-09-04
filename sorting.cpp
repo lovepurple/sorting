@@ -21,7 +21,6 @@ void MergeSort(int*, int);
 void HeapifyElement(int*, int, int);
 void Heapify(int*, int);
 void HeapSort(int*, int);
-int QuickSortPartition(int*, int, int, int);
 void RecursiveQuickSort(int*, int, int);
 void QuickSort(int*, int);
 int  MaxValue(int*, int);
@@ -30,7 +29,6 @@ void RadixSort(int*, int);
 void BucketSort(int*, int);
 
 int main() {
-
     RunTestSuite();
 //    SingleTest(HeapSort, 20, 100);
 
