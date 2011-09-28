@@ -32,7 +32,7 @@ void BucketSort(int*, int);
 
 int main() {
     RunTestSuite();
-    //SingleTest(NewQuickSort, 30, 100);
+    //SingleTest(QuickSort, 30, 100);
 
     return 0;
 }
@@ -49,8 +49,8 @@ void SingleTest(SortFunction func, int size, int maxKey) {
 
 void RunTestSuite()
 {
-    const int NUM_SORT_FUNCS = 4;
-    const int MAX_KEY_VALUE = 5000000;
+    const int NUM_SORT_FUNCS = 2;
+    const int MAX_KEY_VALUE = 500;
     const int NUM_TESTS = 11;
     const int NUM_SAMPLES = 10;
     const int TEST_SIZES[] = {10, 50, 100, 
@@ -69,10 +69,8 @@ void RunTestSuite()
                             BucketSort};
     */
     
-    const string sortFuncNames[] = {"Merge Sort", "Heap Sort", "Quick Sort", 
-                                    "Counting Sort"};
-    const SortFunction sortFuncs[] = {MergeSort, HeapSort, QuickSort,
-                                      CountingSort};
+    const string sortFuncNames[] = {"Old", "New"};
+    const SortFunction sortFuncs[] = {QuickSort, NewQuickSort};
     
     timeval start, end;
     int *tmpArray;
@@ -98,7 +96,6 @@ void RunTestSuite()
             }
             cout << endl;
         }
-
         cout << endl;
 
         for (int j = 0; j < NUM_SAMPLES; j++)
@@ -282,36 +279,32 @@ void QuickSort(int *ary, int size) {
     RecursiveQuickSort(ary, 0, size - 1);
 }
 
-int Partition(int *ary, int start, int end) {
+void NewRecursiveQuickSort(int *ary, int start, int end) {
     int tmp;
     int lower = start;
     int pivot = ary[end];
 
-    for (int i = start; i < end; i++) {
-        if (ary[i] < pivot) {
-            tmp = ary[i];
-            ary[i] = ary[lower];
-            ary[lower++] = tmp;
+    if (start < end) {
+        for (int i = start; i < end; i++) {
+            if (ary[i] < pivot) {
+                tmp = ary[i];
+                ary[i] = ary[lower];
+                ary[lower++] = tmp;
+            }
         }
     }
 
     ary[end] = ary[lower];
     ary[lower] = pivot;
 
-    return lower;
-}
-
-void NewRecursiveQuickSort(int *ary, int start, int end) {
-    if (start < end) {
-        int pivot = Partition(ary, start, end);
-        NewRecursiveQuickSort(ary, start, pivot - 1);
-        NewRecursiveQuickSort(ary, pivot + 1, end);
-    }
+    if (start != lower)
+        NewRecursiveQuickSort(ary, start, lower - 1);
+    if (end != lower)
+        NewRecursiveQuickSort(ary, lower + 1, end);
 }
 
 void NewQuickSort(int *ary, int size) {
     NewRecursiveQuickSort(ary, 0, size - 1);
-//    Partition(ary, 0, size - 1);
 }
 
 int MaxValue(int *ary, int size) {
