@@ -23,8 +23,6 @@ void Heapify(int*, int);
 void HeapSort(int*, int);
 void RecursiveQuickSort(int*, int, int);
 void QuickSort(int*, int);
-void NewRecursiveQuickSort(int*, int, int);
-void NewQuickSort(int*, int);
 int  MaxValue(int*, int);
 void CountingSort(int*, int);
 void RadixSort(int*, int);
@@ -49,7 +47,8 @@ void SingleTest(SortFunction func, int size, int maxKey) {
 
 void RunTestSuite()
 {
-    const int NUM_SORT_FUNCS = 2;
+    //const int NUM_SORT_FUNCS = 7;
+    const int NUM_SORT_FUNCS = 4;
     const int MAX_KEY_VALUE = 500;
     const int NUM_TESTS = 11;
     const int NUM_SAMPLES = 10;
@@ -58,7 +57,6 @@ void RunTestSuite()
                        10000, 50000, 100000, 
                        500000, 1000000};
 
-    
     /*
     const string sortFuncNames[] = {"Insertion Sort", "Merge Sort", "Heap Sort",
                               "Quick Sort", "Counting Sort", "Radix Sort", 
@@ -68,9 +66,12 @@ void RunTestSuite()
                             QuickSort, CountingSort, RadixSort, 
                             BucketSort};
     */
+
+    const string sortFuncNames[] = {"Merge Sort", "Heap Sort",
+                              "Quick Sort", "Counting Sort"};
     
-    const string sortFuncNames[] = {"Old", "New"};
-    const SortFunction sortFuncs[] = {QuickSort, NewQuickSort};
+    const SortFunction sortFuncs[] = {MergeSort, HeapSort,
+                            QuickSort, CountingSort};
     
     timeval start, end;
     int *tmpArray;
@@ -138,9 +139,10 @@ void PrintTimeDiff(timeval start, timeval end) {
     long useconds = end.tv_usec - start.tv_usec;
 
     //double mtime = ((seconds) + useconds/1000000.0);
-    long mtime = ((seconds*1000000) + useconds);
+    long utime = ((seconds*1000000) + useconds);
 
-    cout << "\t" << mtime;
+    // utime is in microseconds
+    cout << "\t" << utime;
 }
 
 void InsertionSort(int *ary, int size) {
@@ -277,34 +279,6 @@ void RecursiveQuickSort(int *ary, int start, int end) {
 
 void QuickSort(int *ary, int size) {
     RecursiveQuickSort(ary, 0, size - 1);
-}
-
-void NewRecursiveQuickSort(int *ary, int start, int end) {
-    int tmp;
-    int lower = start;
-    int pivot = ary[end];
-
-    if (start < end) {
-        for (int i = start; i < end; i++) {
-            if (ary[i] < pivot) {
-                tmp = ary[i];
-                ary[i] = ary[lower];
-                ary[lower++] = tmp;
-            }
-        }
-    }
-
-    ary[end] = ary[lower];
-    ary[lower] = pivot;
-
-    if (start != lower)
-        NewRecursiveQuickSort(ary, start, lower - 1);
-    if (end != lower)
-        NewRecursiveQuickSort(ary, lower + 1, end);
-}
-
-void NewQuickSort(int *ary, int size) {
-    NewRecursiveQuickSort(ary, 0, size - 1);
 }
 
 int MaxValue(int *ary, int size) {
