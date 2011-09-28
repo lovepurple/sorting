@@ -23,6 +23,8 @@ void Heapify(int*, int);
 void HeapSort(int*, int);
 void RecursiveQuickSort(int*, int, int);
 void QuickSort(int*, int);
+void NewRecursiveQuickSort(int*, int, int);
+void NewQuickSort(int*, int);
 int  MaxValue(int*, int);
 void CountingSort(int*, int);
 void RadixSort(int*, int);
@@ -30,7 +32,7 @@ void BucketSort(int*, int);
 
 int main() {
     RunTestSuite();
-//    SingleTest(HeapSort, 20, 100);
+    //SingleTest(NewQuickSort, 30, 100);
 
     return 0;
 }
@@ -48,7 +50,7 @@ void SingleTest(SortFunction func, int size, int maxKey) {
 void RunTestSuite()
 {
     const int NUM_SORT_FUNCS = 4;
-    const int MAX_KEY_VALUE = 500;
+    const int MAX_KEY_VALUE = 5000000;
     const int NUM_TESTS = 11;
     const int NUM_SAMPLES = 10;
     const int TEST_SIZES[] = {10, 50, 100, 
@@ -66,7 +68,7 @@ void RunTestSuite()
                             QuickSort, CountingSort, RadixSort, 
                             BucketSort};
     */
-
+    
     const string sortFuncNames[] = {"Merge Sort", "Heap Sort", "Quick Sort", 
                                     "Counting Sort"};
     const SortFunction sortFuncs[] = {MergeSort, HeapSort, QuickSort,
@@ -77,7 +79,7 @@ void RunTestSuite()
 
     for (int i = 0; i < NUM_TESTS; i++) {
         int N = TEST_SIZES[i];
-        cout << "Sorting with N=" << N << endl;
+        cout << "N=" << N << endl;
 
         // Generate random samples
         int **randArrays = new int*[NUM_SAMPLES];
@@ -85,7 +87,7 @@ void RunTestSuite()
             randArrays[i] = RandomArray(N, MAX_KEY_VALUE);
         
         for (int j = 0; j < NUM_SORT_FUNCS; j++) {
-            cout << sortFuncNames[j] << '\t';
+            cout << sortFuncNames[j];
             for (int k = 0; k < NUM_SAMPLES; k++) {
                 tmpArray = CopyArray(randArrays[k], N);
                 gettimeofday(&start, NULL);
@@ -280,6 +282,38 @@ void QuickSort(int *ary, int size) {
     RecursiveQuickSort(ary, 0, size - 1);
 }
 
+int Partition(int *ary, int start, int end) {
+    int tmp;
+    int lower = start;
+    int pivot = ary[end];
+
+    for (int i = start; i < end; i++) {
+        if (ary[i] < pivot) {
+            tmp = ary[i];
+            ary[i] = ary[lower];
+            ary[lower++] = tmp;
+        }
+    }
+
+    ary[end] = ary[lower];
+    ary[lower] = pivot;
+
+    return lower;
+}
+
+void NewRecursiveQuickSort(int *ary, int start, int end) {
+    if (start < end) {
+        int pivot = Partition(ary, start, end);
+        NewRecursiveQuickSort(ary, start, pivot - 1);
+        NewRecursiveQuickSort(ary, pivot + 1, end);
+    }
+}
+
+void NewQuickSort(int *ary, int size) {
+    NewRecursiveQuickSort(ary, 0, size - 1);
+//    Partition(ary, 0, size - 1);
+}
+
 int MaxValue(int *ary, int size) {
     int max = 0;
 
@@ -317,6 +351,5 @@ void RadixSort(int *ary, int size) {
 }
 
 void BucketSort(int *ary, int size) {
-    int maxNum = MaxValue(ary, size);
-    cout << maxNum << endl;
+    //TODO: Bucket Sort
 }
