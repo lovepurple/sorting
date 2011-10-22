@@ -77,18 +77,18 @@ void RunTestSuite() {
     timeval start, end;
     int *tmpArray;
 
-    for (int i = 0; i < NUM_TESTS; i++) {
+    for (int i = 0; i < NUM_TESTS; ++i) {
         int N = TEST_SIZES[i];
         cout << "N=" << N << endl;
 
         // Generate random samples
         int **randArrays = new int*[NUM_SAMPLES];
-        for (int i = 0; i < NUM_SAMPLES; i++)
+        for (int i = 0; i < NUM_SAMPLES; ++i)
             randArrays[i] = RandomArray(N, MAX_KEY_VALUE);
 
-        for (int j = 0; j < NUM_SORT_FUNCS; j++) {
+        for (int j = 0; j < NUM_SORT_FUNCS; ++j) {
             cout << sortFuncNames[j];
-            for (int k = 0; k < NUM_SAMPLES; k++) {
+            for (int k = 0; k < NUM_SAMPLES; ++k) {
                 tmpArray = CopyArray(randArrays[k], N);
                 gettimeofday(&start, NULL);
                 (*sortFuncs[j])(tmpArray, N);
@@ -100,14 +100,14 @@ void RunTestSuite() {
         }
         cout << endl;
 
-        for (int j = 0; j < NUM_SAMPLES; j++)
+        for (int j = 0; j < NUM_SAMPLES; ++j)
             delete[] randArrays[j];
         delete[] randArrays;
     }
 }
 
 void PrintArray(int *ary, int size) {
-    for (int i = 0; i < size; i++)
+    for (int i = 0; i < size; ++i)
         cout << ary[i] << " ";
     cout << endl;
 }
@@ -118,7 +118,7 @@ int *RandomArray(int size, int maxRandNum) {
     gettimeofday(&timeseed, NULL);
 
     srand(timeseed.tv_usec);
-    for (int i = 0; i < size; i++)
+    for (int i = 0; i < size; ++i)
         randArray[i] = (rand() % maxRandNum) + 1;
 
     return randArray;
@@ -127,7 +127,7 @@ int *RandomArray(int size, int maxRandNum) {
 int *CopyArray(int *ary, int size) {
     int *tmp = new int[size];
 
-    for (int i = 0; i < size; i++)
+    for (int i = 0; i < size; ++i)
         tmp[i] = ary[i];
 
     return tmp;
@@ -143,9 +143,9 @@ void PrintTimeDiff(timeval start, timeval end) {
 }
 
 void InsertionSort(int *ary, int size) {
-    for (int i = 1; i < size; i++) {
+    for (int i = 1; i < size; ++i) {
         int key = ary[i];
-        for (int j = i - 1; j >= 0 && ary[j] > key; j--) {
+        for (int j = i - 1; j >= 0 && ary[j] > key; --j) {
             ary[j + 1] = ary[j];
             ary[j] = key;
         }
@@ -177,7 +177,7 @@ void Merge(int *ary, int start, int mid, int end) {
         tmp[tmpIndex++] = ary[rightEnd--];
 
     // Reverse temp array and put it back into ary
-    for (int i = start; i <= end; i++)
+    for (int i = start; i <= end; ++i)
         ary[i] = tmp[end - i];
 
     // Delete temporary array
@@ -230,7 +230,7 @@ void HeapifyElement(int *ary, int size, int loc) {
 
 void Heapify(int *ary, int size) {
     // Bottom-up
-    for (int i = size - 1; i >= 0; i--)
+    for (int i = size - 1; i >= 0; --i)
         HeapifyElement(ary, size, i);
 }
 
@@ -255,9 +255,9 @@ void RecursiveQuickSort(int *ary, int start, int end) {
 
     while (i <= j) {
         while (ary[i] < pivot)
-            i++;
+            ++i;
         while (ary[j] > pivot)
-            j--;
+            --j;
         if (i <= j) {
             tmp = ary[i];
             ary[i++] = ary[j];
@@ -278,7 +278,7 @@ void QuickSort(int *ary, int size) {
 int MaxValue(int *ary, int size) {
     int max = 0;
 
-    for (int i = 0; i < size; i++)
+    for (int i = 0; i < size; ++i)
         if (ary[i] > max)
             max = ary[i];
 
@@ -291,25 +291,25 @@ void CountingSort(int *ary, int size) {
     // Initialize temporary & counting arrays
     int *temp = new int[size];
     int *counts = new int[k];
-    for (int i = 0; i < k; i++)
+    for (int i = 0; i < k; ++i)
         counts[i] = 0;
 
-    // Count occurences
-    for (int i = 0; i < size; i++)
+    // Count occurrences
+    for (int i = 0; i < size; ++i)
         counts[ary[i]]++;
 
     // Add previous indexes to get spot in final array
-    for (int i = 1; i < k; i++)
+    for (int i = 1; i < k; ++i)
         counts[i] += counts[i - 1];
 
     // Copy from ary to correct position in temp
-    for (int i = size - 1; i >= 0; i--) {
+    for (int i = size - 1; i >= 0; --i) {
         temp[counts[ary[i]] - 1] = ary[i];
-        counts[ary[i]]--;
+        --counts[ary[i]];
     }
 
     // Copy sorted array back into the original array
-    for (int i = 0; i < size; i++)
+    for (int i = 0; i < size; ++i)
         ary[i] = temp[i];
 
     delete []temp;
@@ -320,7 +320,7 @@ int NumDigits(int num) {
     int digits = 0;
 
     while (num > 0) {
-        digits++;
+        ++digits;
         num /= 10;
     }
 
@@ -328,7 +328,7 @@ int NumDigits(int num) {
 }
 
 int DigitValue(int num, int digit) {
-    for (int i = 0; num > 0 && i < digit; i++)
+    for (int i = 0; num > 0 && i < digit; ++i)
         num /= 10;
 
     return num % 10;
@@ -340,25 +340,25 @@ void CountingSort(int *ary, int size, int digit) {
     // Initialize temporary & counting arrays
     int *temp = new int[size];
     int counts[NUM_DIGITS];
-    for (int i = 0; i < NUM_DIGITS; i++)
+    for (int i = 0; i < NUM_DIGITS; ++i)
         counts[i] = 0;
 
-    // Count occurences
-    for (int i = 0; i < size; i++)
-        counts[DigitValue(ary[i], digit)]++;
+    // Count occurrences
+    for (int i = 0; i < size; ++i)
+        ++counts[DigitValue(ary[i], digit)];
 
     // Add previous indexes to get spot in final array
-    for (int i = 1; i < NUM_DIGITS; i++)
+    for (int i = 1; i < NUM_DIGITS; ++i)
         counts[i] += counts[i - 1];
 
     // Copy from ary to correct position in temp
-    for (int i = size - 1; i >= 0; i--) {
+    for (int i = size - 1; i >= 0; --i) {
         temp[counts[ DigitValue(ary[i], digit)] - 1] = ary[i];
-        counts[DigitValue(ary[i], digit)]--;
+        --counts[DigitValue(ary[i], digit)];
     }
 
     // Copy sorted array back into the original array
-    for (int i = 0; i < size; i++)
+    for (int i = 0; i < size; ++i)
         ary[i] = temp[i];
 
     delete []temp;
@@ -367,7 +367,7 @@ void CountingSort(int *ary, int size, int digit) {
 void RadixSort(int *ary, int size) {
     int digits = NumDigits(MaxValue(ary, size));
 
-    for (int i = 0; i < digits; i++)
+    for (int i = 0; i < digits; ++i)
         CountingSort(ary, size, i);
 }
 
