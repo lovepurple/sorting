@@ -27,14 +27,14 @@ int MaxValue(int*, int);
 void CountingSort(int*, int);
 int NumDigits(int);
 int DigitValue(int, int);
-void CountingSortDigit(int*, int, int);
+void CountingSort(int*, int, int);
 void RadixSort(int*, int);
 void BucketSort(int*, int);
 
 int main() {
     RunTestSuite();
     //SingleTest(RadixSort, 15, 50000);
-    
+
     return 0;
 }
 
@@ -70,10 +70,10 @@ void RunTestSuite() {
      */
 
     const string sortFuncNames[] = {"Merge Sort", "Heap Sort",
-                              "Quick Sort", "Counting Sort", "Radix Sort"};
-    
+        "Quick Sort", "Counting Sort", "Radix Sort"};
+
     const SortFunction sortFuncs[] = {MergeSort, HeapSort,
-                            QuickSort, CountingSort, RadixSort};
+        QuickSort, CountingSort, RadixSort};
 
     timeval start, end;
     int *tmpArray;
@@ -300,7 +300,7 @@ void CountingSort(int *ary, int size) {
     int *temp = new int[size];
     int *counts = new int[k];
     for (int i = 0; i < k; i++)
-        counts[i] = 0;    
+        counts[i] = 0;
 
     // Count occurences
     for (int i = 0; i < size; i++)
@@ -315,7 +315,7 @@ void CountingSort(int *ary, int size) {
         temp[counts[ary[i]] - 1] = ary[i];
         counts[ary[i]]--;
     }
-  
+
     // Copy sorted array back into the original array
     for (int i = 0; i < size; i++)
         ary[i] = temp[i];
@@ -342,43 +342,41 @@ int DigitValue(int num, int digit) {
     return num % 10;
 }
 
-void CountingSortDigit(int *ary, int size, int digit) {
+void CountingSort(int *ary, int size, int digit) {
     const int NUM_DIGITS = 10;
 
     // Initialize temporary & counting arrays
     int *temp = new int[size];
-    int *counts = new int[NUM_DIGITS];
+    int counts[NUM_DIGITS];
     for (int i = 0; i < NUM_DIGITS; i++)
-        counts[i] = 0;    
+        counts[i] = 0;
 
     // Count occurences
     for (int i = 0; i < size; i++)
         counts[DigitValue(ary[i], digit)]++;
-    
+
     // Add previous indexes to get spot in final array
     for (int i = 1; i < NUM_DIGITS; i++)
         counts[i] += counts[i - 1];
-    
+
     // Copy from ary to correct position in temp
     for (int i = size - 1; i >= 0; i--) {
         temp[counts[ DigitValue(ary[i], digit)] - 1] = ary[i];
         counts[DigitValue(ary[i], digit)]--;
     }
-  
+
     // Copy sorted array back into the original array
     for (int i = 0; i < size; i++)
         ary[i] = temp[i];
-     
+
     delete []temp;
-    delete []counts;
 }
 
 void RadixSort(int *ary, int size) {
     int digits = NumDigits(MaxValue(ary, size));
 
-    for (int i = 0; i < digits; i++) {
-        CountingSortDigit(ary, size, i);
-    }
+    for (int i = 0; i < digits; i++)
+        CountingSort(ary, size, i);
 }
 
 void BucketSort(int *ary, int size) {
