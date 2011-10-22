@@ -23,21 +23,21 @@ void Heapify(int*, int);
 void HeapSort(int*, int);
 void RecursiveQuickSort(int*, int, int);
 void QuickSort(int*, int);
-int  MaxValue(int*, int);
+int MaxValue(int*, int);
 void CountingSort(int*, int);
 void RadixSort(int*, int);
 void BucketSort(int*, int);
 
 int main() {
-    RunTestSuite();
-    //SingleTest(QuickSort, 30, 100);
+    //RunTestSuite();
+    SingleTest(CountingSort, 30, 100);
 
     return 0;
 }
 
 void SingleTest(SortFunction func, int size, int maxKey) {
     int *test = RandomArray(size, maxKey);
-    
+
     PrintArray(test, size);
     (*func)(test, size);
     PrintArray(test, size);
@@ -45,17 +45,16 @@ void SingleTest(SortFunction func, int size, int maxKey) {
     delete[] test;
 }
 
-void RunTestSuite()
-{
+void RunTestSuite() {
     //const int NUM_SORT_FUNCS = 7;
     const int NUM_SORT_FUNCS = 4;
     const int MAX_KEY_VALUE = 500;
     const int NUM_TESTS = 11;
     const int NUM_SAMPLES = 10;
-    const int TEST_SIZES[] = {10, 50, 100, 
-                       500, 1000, 5000,  
-                       10000, 50000, 100000, 
-                       500000, 1000000};
+    const int TEST_SIZES[] = {10, 50, 100,
+        500, 1000, 5000,
+        10000, 50000, 100000,
+        500000, 1000000};
 
     /*
     const string sortFuncNames[] = {"Insertion Sort", "Merge Sort", "Heap Sort",
@@ -65,14 +64,14 @@ void RunTestSuite()
     const SortFunction sortFuncs[] = {InsertionSort, MergeSort, HeapSort,
                             QuickSort, CountingSort, RadixSort, 
                             BucketSort};
-    */
+     */
 
     const string sortFuncNames[] = {"Merge Sort", "Heap Sort",
-                              "Quick Sort", "Counting Sort"};
-    
+        "Quick Sort", "Counting Sort"};
+
     const SortFunction sortFuncs[] = {MergeSort, HeapSort,
-                            QuickSort, CountingSort};
-    
+        QuickSort, CountingSort};
+
     timeval start, end;
     int *tmpArray;
 
@@ -84,7 +83,7 @@ void RunTestSuite()
         int **randArrays = new int*[NUM_SAMPLES];
         for (int i = 0; i < NUM_SAMPLES; i++)
             randArrays[i] = RandomArray(N, MAX_KEY_VALUE);
-        
+
         for (int j = 0; j < NUM_SORT_FUNCS; j++) {
             cout << sortFuncNames[j];
             for (int k = 0; k < NUM_SAMPLES; k++) {
@@ -135,11 +134,11 @@ int *CopyArray(int *ary, int size) {
 }
 
 void PrintTimeDiff(timeval start, timeval end) {
-    long seconds  = end.tv_sec  - start.tv_sec;
+    long seconds = end.tv_sec - start.tv_sec;
     long useconds = end.tv_usec - start.tv_usec;
 
     //double mtime = ((seconds) + useconds/1000000.0);
-    long utime = ((seconds*1000000) + useconds);
+    long utime = ((seconds * 1000000) + useconds);
 
     // utime is in microseconds
     cout << "\t" << utime;
@@ -156,12 +155,12 @@ void InsertionSort(int *ary, int size) {
 }
 
 void Merge(int *ary, int start, int mid, int end) {
-    
+
     // Necessary variables
     int tmpIndex = 0,
-        rightStart = mid + 1,
-        rightEnd = end,
-        leftEnd = mid;
+            rightStart = mid + 1,
+            rightEnd = end,
+            leftEnd = mid;
 
     // Temporary array
     int *tmp = new int[end - start + 1];
@@ -173,11 +172,11 @@ void Merge(int *ary, int start, int mid, int end) {
         else
             tmp[tmpIndex++] = ary[rightEnd--];
     }
-    
+
     // Append the remaining elements
-    while(start <= leftEnd)
+    while (start <= leftEnd)
         tmp[tmpIndex++] = ary[leftEnd--];
-    while(rightStart <= rightEnd)
+    while (rightStart <= rightEnd)
         tmp[tmpIndex++] = ary[rightEnd--];
 
     // Reverse temp array and put it back into ary
@@ -211,7 +210,7 @@ void HeapifyElement(int *ary, int size, int loc) {
 
     // While the current element has a child
     while (child < size) {
-        
+
         // Check if left child is larger
         if (ary[child] > ary[toSwap])
             toSwap = child;
@@ -225,40 +224,40 @@ void HeapifyElement(int *ary, int size, int loc) {
             tmp = ary[loc];
             ary[loc] = ary[toSwap];
             ary[toSwap] = tmp;
-            
+
             loc = toSwap;
             child = loc * 2 + 1;
-        } else 
+        } else
             break;
     }
 }
 
 void Heapify(int *ary, int size) {
     // Bottom-up
-    for(int i = size-1; i >= 0; i--) {
-        HeapifyElement(ary, size, i);   
+    for (int i = size - 1; i >= 0; i--) {
+        HeapifyElement(ary, size, i);
     }
 }
 
 void HeapSort(int *ary, int size) {
     int tmp;
     Heapify(ary, size);
-    
+
     while (size > 0) {
         tmp = ary[0];
         ary[0] = ary[--size];
         ary[size] = tmp;
-        
+
         HeapifyElement(ary, size, 0);
     }
 }
 
 void RecursiveQuickSort(int *ary, int start, int end) {
-    int i = start, 
-        j = end,
-        pivot = ary[(start + end) / 2],
-        tmp;
- 
+    int i = start,
+            j = end,
+            pivot = ary[(start + end) / 2],
+            tmp;
+
     while (i <= j) {
         while (ary[i] < pivot)
             i++;
@@ -270,7 +269,7 @@ void RecursiveQuickSort(int *ary, int start, int end) {
             ary[j--] = tmp;
         }
     };
- 
+
     if (start < j)
         RecursiveQuickSort(ary, start, j);
     if (i < end)
@@ -285,7 +284,7 @@ int MaxValue(int *ary, int size) {
     int max = 0;
 
     for (int i = 0; i < size; i++)
-        if (ary[i] > max) 
+        if (ary[i] > max)
             max = ary[i];
 
     return max;
@@ -295,21 +294,29 @@ void CountingSort(int *ary, int size) {
 
     int k = MaxValue(ary, size) + 1;
 
-    // Initialize counting array
+    // Initialize temporary & counting arrays
+    int *temp = new int[size];
     int *counts = new int[k];
-    for (int i = 0; i < k; i++)
-        counts[i] = 0;
 
-    // Count occurances
+    // Count occurences
     for (int i = 0; i < size; i++)
         counts[ary[i]]++;
 
-    // Place counts into original array
-    int index = 0;
-    for (int i = 0; i < k; i++)
-        for (int j = 0; j < counts[i]; j++)
-            ary[index++] = i;
+    // Add previous indexes to get spot in final array
+    for (int i = 1; i <= k; i++)
+        counts[i] += counts[i - 1];
 
+    // Copy from ary to correct position in temp
+    for (int i = size - 1; i >= 0; i--) {
+        temp[counts[ary[i]] - 1] = ary[i];
+        counts[ary[i]]--;
+    }
+
+    // Copy sorted array back into the original array
+    for (int i = 0; i < size; i++)
+        ary[i] = temp[i];
+
+    delete []temp;
     delete []counts;
 }
 
