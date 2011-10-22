@@ -33,7 +33,6 @@ void BucketSort(int*, int);
 
 int main() {
     RunTestSuite();
-    //SingleTest(RadixSort, 15, 50000);
 
     return 0;
 }
@@ -108,9 +107,8 @@ void RunTestSuite() {
 }
 
 void PrintArray(int *ary, int size) {
-    for (int i = 0; i < size; i++) {
+    for (int i = 0; i < size; i++)
         cout << ary[i] << " ";
-    }
     cout << endl;
 }
 
@@ -120,9 +118,8 @@ int *RandomArray(int size, int maxRandNum) {
     gettimeofday(&timeseed, NULL);
 
     srand(timeseed.tv_usec);
-    for (int i = 0; i < size; i++) {
+    for (int i = 0; i < size; i++)
         randArray[i] = (rand() % maxRandNum) + 1;
-    }
 
     return randArray;
 }
@@ -136,14 +133,12 @@ int *CopyArray(int *ary, int size) {
     return tmp;
 }
 
+// Time in microseconds
 void PrintTimeDiff(timeval start, timeval end) {
     long seconds = end.tv_sec - start.tv_sec;
     long useconds = end.tv_usec - start.tv_usec;
-
-    //double mtime = ((seconds) + useconds/1000000.0);
     long utime = ((seconds * 1000000) + useconds);
 
-    // utime is in microseconds
     cout << "\t" << utime;
 }
 
@@ -169,12 +164,11 @@ void Merge(int *ary, int start, int mid, int end) {
     int *tmp = new int[end - start + 1];
 
     // Append max until one half is out of elements
-    while (start <= leftEnd && rightStart <= rightEnd) {
+    while (start <= leftEnd && rightStart <= rightEnd)
         if (ary[leftEnd] > ary[rightEnd])
             tmp[tmpIndex++] = ary[leftEnd--];
         else
             tmp[tmpIndex++] = ary[rightEnd--];
-    }
 
     // Append the remaining elements
     while (start <= leftEnd)
@@ -183,9 +177,8 @@ void Merge(int *ary, int start, int mid, int end) {
         tmp[tmpIndex++] = ary[rightEnd--];
 
     // Reverse temp array and put it back into ary
-    for (int i = start; i <= end; i++) {
+    for (int i = start; i <= end; i++)
         ary[i] = tmp[end - i];
-    }
 
     // Delete temporary array
     delete[] tmp;
@@ -237,9 +230,8 @@ void HeapifyElement(int *ary, int size, int loc) {
 
 void Heapify(int *ary, int size) {
     // Bottom-up
-    for (int i = size - 1; i >= 0; i--) {
+    for (int i = size - 1; i >= 0; i--)
         HeapifyElement(ary, size, i);
-    }
 }
 
 void HeapSort(int *ary, int size) {
@@ -271,7 +263,7 @@ void RecursiveQuickSort(int *ary, int start, int end) {
             ary[i++] = ary[j];
             ary[j--] = tmp;
         }
-    };
+    }
 
     if (start < j)
         RecursiveQuickSort(ary, start, j);
