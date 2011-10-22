@@ -25,12 +25,15 @@ void RecursiveQuickSort(int*, int, int);
 void QuickSort(int*, int);
 int MaxValue(int*, int);
 void CountingSort(int*, int);
+int NumDigits(int);
+int DigitValue(int, int);
+void InsertionSortDigit(int*, int, int);
 void RadixSort(int*, int);
 void BucketSort(int*, int);
 
 int main() {
     //RunTestSuite();
-    SingleTest(CountingSort, 30, 100);
+    SingleTest(CountingSort, 15, 50000);
 
     return 0;
 }
@@ -47,8 +50,8 @@ void SingleTest(SortFunction func, int size, int maxKey) {
 
 void RunTestSuite() {
     //const int NUM_SORT_FUNCS = 7;
-    const int NUM_SORT_FUNCS = 4;
-    const int MAX_KEY_VALUE = 500;
+    const int NUM_SORT_FUNCS = 5;
+    const int MAX_KEY_VALUE = 50000;
     const int NUM_TESTS = 11;
     const int NUM_SAMPLES = 10;
     const int TEST_SIZES[] = {10, 50, 100,
@@ -66,11 +69,11 @@ void RunTestSuite() {
                             BucketSort};
      */
 
-    const string sortFuncNames[] = {"Merge Sort", "Heap Sort",
-        "Quick Sort", "Counting Sort"};
-
-    const SortFunction sortFuncs[] = {MergeSort, HeapSort,
-        QuickSort, CountingSort};
+    const string sortFuncNames[] = {"Insertion Sort", "Merge Sort", "Heap Sort",
+                              "Quick Sort", "Counting Sort"};
+    
+    const SortFunction sortFuncs[] = {InsertionSort, MergeSort, HeapSort,
+                            QuickSort, CountingSort};
 
     timeval start, end;
     int *tmpArray;
@@ -291,19 +294,20 @@ int MaxValue(int *ary, int size) {
 }
 
 void CountingSort(int *ary, int size) {
-
     int k = MaxValue(ary, size) + 1;
 
     // Initialize temporary & counting arrays
     int *temp = new int[size];
     int *counts = new int[k];
+    for (int i = 0; i < k; i++)
+        counts[i] = 0;    
 
     // Count occurences
     for (int i = 0; i < size; i++)
         counts[ary[i]]++;
 
     // Add previous indexes to get spot in final array
-    for (int i = 1; i <= k; i++)
+    for (int i = 1; i < k; i++)
         counts[i] += counts[i - 1];
 
     // Copy from ary to correct position in temp
@@ -311,7 +315,7 @@ void CountingSort(int *ary, int size) {
         temp[counts[ary[i]] - 1] = ary[i];
         counts[ary[i]]--;
     }
-
+  
     // Copy sorted array back into the original array
     for (int i = 0; i < size; i++)
         ary[i] = temp[i];
@@ -320,8 +324,41 @@ void CountingSort(int *ary, int size) {
     delete []counts;
 }
 
+int NumDigits(int num) {
+    int digits = 0;
+
+    while (num > 0) {
+        digits++;
+        num /= 10;
+    }
+
+    return digits;
+}
+
+int DigitValue(int num, int digit) {
+    for (int i = 0; num > 0 && i < digit; i++)
+        num /= 10;
+
+    return num % 10;
+}
+
+void InsertionSortDigit(int* ary, int size, int digit) {
+    for (int i = 1; i < size; i++) {
+        int data = ary[i];
+        int key = DigitValue(ary[i], digit);
+        for (int j = i - 1; j >= 0 && DigitValue(ary[j], digit) > key; j--) {
+            ary[j + 1] = ary[j];
+            ary[j] = data;
+        }
+    }
+}
+
 void RadixSort(int *ary, int size) {
-    //TODO: Radix Sort
+    int digits = NumDigits(MaxValue(ary, size));
+
+    for (int i = 0; i < digits; i++) {
+        InsertionSortDigit(ary, size, i);
+    }
 }
 
 void BucketSort(int *ary, int size) {
