@@ -1,3 +1,21 @@
+/* ========================================================================== 
+ *	PROGRAM Sorting Algorithms
+ *
+ *		AUTHOR: Steven Burgart
+ *		FSU MAIL ID: skb08c@my.fsu.edu
+ *		COP4531 - Fall 2011
+ *		PROJECT NUMBER: 1
+ *		DUE DATE: 10/28/11
+ *
+ *	Description:	This program implements and benchmarks the following
+ *              sorting algorithms:
+ * 
+ *              Insertion Sort, Merge Sort, Heap Sort,
+ *              Quick Sort, Counting Sort, Bucket Sort,
+ *              Radix Sort
+ *
+ * ========================================================================== */
+
 #include <iostream>
 #include <cstdlib>
 #include <string>
@@ -9,7 +27,7 @@ typedef void (*SortFunction)(int*, int);
 
 // Function prototypes - documentation in declarations
 void SingleTest(SortFunction, int, int);
-void RunTestSuite();
+void RunBenchmarks();
 void PrintArray(int*, int);
 int *RandomArray(int, int);
 int *CopyArray(int*, int);
@@ -31,12 +49,20 @@ void CountingSort(int*, int, int);
 void RadixSort(int*, int);
 void BucketSort(int*, int);
 
+// ========================================================================== //
+// Method Name - Main
+//      Simply run the benchmarks defined below
+// ========================================================================== //
 int main() {
-    RunTestSuite();
+    RunBenchmarks();
 
     return 0;
 }
 
+// ========================================================================== //
+// Method Name - SingleTest
+//      For debugging purposes, quickly tests a single sort function
+// ========================================================================== //
 void SingleTest(SortFunction func, int size, int maxKey) {
     int *test = RandomArray(size, maxKey);
 
@@ -47,13 +73,18 @@ void SingleTest(SortFunction func, int size, int maxKey) {
     delete[] test;
 }
 
-void RunTestSuite() {
+// ========================================================================== //
+// Method Name - RunBenchmarks
+//      Run a series of benchmarks based on the constant parameters declared
+//      at the beginning of the function. 
+// ========================================================================== //
+void RunBenchmarks() {
     //const int NUM_SORT_FUNCS = 7;
-    const int NUM_SORT_FUNCS = 5;
-    const int MAX_KEY_VALUE = 50000;
-    const int NUM_TESTS = 11;
-    const int NUM_SAMPLES = 10;
-    const int TEST_SIZES[] = {10, 50, 100,
+    const int NUM_SORT_FUNCS = 5;               // Number of sort functions
+    const int MAX_KEY_VALUE = 50000;            // Max value of any element
+    const int NUM_TESTS = 11;                   // Number of separate tests
+    const int NUM_SAMPLES = 10;                 // Number of samples per test
+    const int TEST_SIZES[] = {10, 50, 100,      // The size of each array
         500, 1000, 5000,
         10000, 50000, 100000,
         500000, 1000000};
@@ -86,6 +117,7 @@ void RunTestSuite() {
         for (int i = 0; i < NUM_SAMPLES; ++i)
             randArrays[i] = RandomArray(N, MAX_KEY_VALUE);
 
+        // Benchmark the function
         for (int j = 0; j < NUM_SORT_FUNCS; ++j) {
             cout << sortFuncNames[j];
             for (int k = 0; k < NUM_SAMPLES; ++k) {
@@ -106,24 +138,36 @@ void RunTestSuite() {
     }
 }
 
+// ========================================================================== //
+// Method Name - PrintArray
+//      Simple method to print an array.
+// ========================================================================== //
 void PrintArray(int *ary, int size) {
     for (int i = 0; i < size; ++i)
         cout << ary[i] << " ";
     cout << endl;
 }
 
-int *RandomArray(int size, int maxRandNum) {
+// ========================================================================== //
+// Method Name - RandomArray
+//      Returns and integer array based on the size and max key value.
+// ========================================================================== //
+int *RandomArray(int size, int maxKeyValue) {
     int *randArray = new int[size];
     timeval timeseed;
     gettimeofday(&timeseed, NULL);
 
     srand(timeseed.tv_usec);
     for (int i = 0; i < size; ++i)
-        randArray[i] = (rand() % maxRandNum) + 1;
+        randArray[i] = (rand() % maxKeyValue) + 1;
 
     return randArray;
 }
 
+// ========================================================================== //
+// Method Name - CopyArray
+//      Returns a deep copy of an array.
+// ========================================================================== //
 int *CopyArray(int *ary, int size) {
     int *tmp = new int[size];
 
@@ -133,7 +177,10 @@ int *CopyArray(int *ary, int size) {
     return tmp;
 }
 
-// Time in microseconds
+// ========================================================================== //
+// Method Name - PrintTimeDiff
+//      Prints the time difference, in microseconds, of two time parameters.
+// ========================================================================== //
 void PrintTimeDiff(timeval start, timeval end) {
     long seconds = end.tv_sec - start.tv_sec;
     long useconds = end.tv_usec - start.tv_usec;
@@ -142,6 +189,10 @@ void PrintTimeDiff(timeval start, timeval end) {
     cout << "\t" << utime;
 }
 
+// ========================================================================== //
+// Method Name - InsertionSort
+//      Implementation of the insertion sort algorithm for integers.
+// ========================================================================== //
 void InsertionSort(int *ary, int size) {
     for (int i = 1; i < size; ++i) {
         int key = ary[i];
@@ -152,8 +203,11 @@ void InsertionSort(int *ary, int size) {
     }
 }
 
+// ========================================================================== //
+// Method Name - Merge
+//      Merge a range from an array - used in the merge sort implementation.
+// ========================================================================== //
 void Merge(int *ary, int start, int mid, int end) {
-
     // Necessary variables
     int tmpIndex = 0,
             rightStart = mid + 1,
@@ -184,6 +238,10 @@ void Merge(int *ary, int start, int mid, int end) {
     delete[] tmp;
 }
 
+// ========================================================================== //
+// Method Name - RecursiveMergeSort
+//      Recursive portion of the merge sort algorithm.
+// ========================================================================== //
 void RecursiveMergeSort(int *ary, int start, int end) {
     int mid = (end + start) / 2;
 
@@ -194,12 +252,20 @@ void RecursiveMergeSort(int *ary, int start, int end) {
     }
 }
 
+// ========================================================================== //
+// Method Name - MergeSort
+//      Implementation of the merge sort algorithm for integers.
+// ========================================================================== //
 void MergeSort(int *ary, int size) {
     RecursiveMergeSort(ary, 0, size - 1);
 }
 
+// ========================================================================== //
+// Method Name - Heapify Element
+//      Heapify a single element from an array. If the heap property is
+//      violated, it will be corrected by heapifying the offending element.
+// ========================================================================== //
 void HeapifyElement(int *ary, int size, int loc) {
-
     int tmp;
     int toSwap = loc;
     int child = loc * 2 + 1;
@@ -228,12 +294,21 @@ void HeapifyElement(int *ary, int size, int loc) {
     }
 }
 
+// ========================================================================== //
+// Method Name - Heapify
+//      Heapify an entire array from the bottom-up. The array is guaranteed 
+//      to satisfy the heap property after this method is called.
+// ========================================================================== //
 void Heapify(int *ary, int size) {
     // Bottom-up
     for (int i = size - 1; i >= 0; --i)
         HeapifyElement(ary, size, i);
 }
 
+// ========================================================================== //
+// Method Name - HeapSort
+//      Implementation of the heap sort algorithm for integers.
+// ========================================================================== //
 void HeapSort(int *ary, int size) {
     int tmp;
     Heapify(ary, size);
@@ -247,6 +322,10 @@ void HeapSort(int *ary, int size) {
     }
 }
 
+// ========================================================================== //
+// Method Name - RecursiveQuickSort
+//      Recursive portion of the quick sort algorithm.
+// ========================================================================== //
 void RecursiveQuickSort(int *ary, int start, int end) {
     int i = start,
             j = end,
@@ -271,10 +350,18 @@ void RecursiveQuickSort(int *ary, int start, int end) {
         RecursiveQuickSort(ary, i, end);
 }
 
+// ========================================================================== //
+// Method Name - QuickSort
+//      Implementation of the quick sort algorithm for integers.
+// ========================================================================== //
 void QuickSort(int *ary, int size) {
     RecursiveQuickSort(ary, 0, size - 1);
 }
 
+// ========================================================================== //
+// Method Name - MaxValue
+//      Returns the element with the maximum value from an array.
+// ========================================================================== //
 int MaxValue(int *ary, int size) {
     int max = 0;
 
@@ -285,6 +372,10 @@ int MaxValue(int *ary, int size) {
     return max;
 }
 
+// ========================================================================== //
+// Method Name - CountingSort
+//      Implementation of the counting sort algorithm for integers.
+// ========================================================================== //
 void CountingSort(int *ary, int size) {
     int k = MaxValue(ary, size) + 1;
 
@@ -316,6 +407,10 @@ void CountingSort(int *ary, int size) {
     delete []counts;
 }
 
+// ========================================================================== //
+// Method Name - NumDigits
+//      Returns the number of digits in the specified integer.
+// ========================================================================== //
 int NumDigits(int num) {
     int digits = 0;
 
@@ -327,6 +422,10 @@ int NumDigits(int num) {
     return digits;
 }
 
+// ========================================================================== //
+// Method Name - DigitValue
+//      Returns the value of the digit specified from the number specified.
+// ========================================================================== //
 int DigitValue(int num, int digit) {
     for (int i = 0; num > 0 && i < digit; ++i)
         num /= 10;
@@ -334,6 +433,11 @@ int DigitValue(int num, int digit) {
     return num % 10;
 }
 
+// ========================================================================== //
+// Method Name - CountingSort
+//      Overloaded implementation of the counting sort algorithm that uses
+//      the specified digit of each element as the key.
+// ========================================================================== //
 void CountingSort(int *ary, int size, int digit) {
     const int NUM_DIGITS = 10;
 
@@ -364,6 +468,10 @@ void CountingSort(int *ary, int size, int digit) {
     delete []temp;
 }
 
+// ========================================================================== //
+// Method Name - RadixSort
+//      Implementation of the radix sort algorithm for integers.
+// ========================================================================== //
 void RadixSort(int *ary, int size) {
     int digits = NumDigits(MaxValue(ary, size));
 
@@ -371,6 +479,10 @@ void RadixSort(int *ary, int size) {
         CountingSort(ary, size, i);
 }
 
+// ========================================================================== //
+// Method Name - BucketSort
+//      Implementation of the bucket sort algorithm for integers.
+// ========================================================================== //
 void BucketSort(int *ary, int size) {
     //TODO: Bucket Sort
 }
