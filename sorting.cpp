@@ -19,14 +19,15 @@
 #include <iostream>
 #include <cstdlib>
 #include <string>
+#include <vector>
 #include <sys/time.h>
 using namespace std;
 
-// Sort function typedef
-typedef void (*SortFunction)(int*, int);
+// Sort algorithm typedef
+typedef void (*SortAlgorithm)(int*, int);
 
-// Function prototypes - documentation in declarations
-void SingleTest(SortFunction, int, int);
+// Method prototypes - documentation in declarations
+void SingleTest(SortAlgorithm, int, int);
 void RunBenchmarks();
 void PrintArray(int*, int);
 int *RandomArray(int, int);
@@ -47,6 +48,7 @@ int NumDigits(int);
 int DigitValue(int, int);
 void CountingSort(int*, int, int);
 void RadixSort(int*, int);
+void InsertionSort(vector<int>&);
 void BucketSort(int*, int);
 
 // ========================================================================== //
@@ -61,9 +63,9 @@ int main() {
 
 // ========================================================================== //
 // Method Name - SingleTest
-//      For debugging purposes, quickly tests a single sort function
+//      For debugging purposes, quickly tests a single sort algorithm
 // ========================================================================== //
-void SingleTest(SortFunction func, int size, int maxKey) {
+void SingleTest(SortAlgorithm func, int size, int maxKey) {
     int *test = RandomArray(size, maxKey);
 
     PrintArray(test, size);
@@ -76,34 +78,26 @@ void SingleTest(SortFunction func, int size, int maxKey) {
 // ========================================================================== //
 // Method Name - RunBenchmarks
 //      Run a series of benchmarks based on the constant parameters declared
-//      at the beginning of the function. 
+//      at the beginning of the method. 
 // ========================================================================== //
 void RunBenchmarks() {
-    //const int NUM_SORT_FUNCS = 7;
-    const int NUM_SORT_FUNCS = 5;               // Number of sort functions
-    const int MAX_KEY_VALUE = 50000;            // Max value of any element
-    const int NUM_TESTS = 11;                   // Number of separate tests
-    const int NUM_SAMPLES = 10;                 // Number of samples per test
-    const int TEST_SIZES[] = {10, 50, 100,      // The size of each array
-        500, 1000, 5000,
-        10000, 50000, 100000,
-        500000, 1000000};
+    const int NUM_SORT_FUNCS = 7;
+    const int MAX_KEY_VALUE = 50000;
+    const int NUM_TESTS = 11;
+    const int NUM_SAMPLES = 10;
+    const int TEST_SIZES[] = {10, 50, 100,
+                              500, 1000, 5000,
+                              10000, 50000, 100000,
+                              500000, 1000000};
 
-    /*
+
     const string sortFuncNames[] = {"Insertion Sort", "Merge Sort", "Heap Sort",
-                              "Quick Sort", "Counting Sort", "Radix Sort", 
-                              "Bucket Sort"};
-    
-    const SortFunction sortFuncs[] = {InsertionSort, MergeSort, HeapSort,
-                            QuickSort, CountingSort, RadixSort, 
-                            BucketSort};
-     */
+                                    "Quick Sort", "Counting Sort", "Radix Sort",
+                                    "Bucket Sort"};
 
-    const string sortFuncNames[] = {"Merge Sort", "Heap Sort",
-        "Quick Sort", "Counting Sort", "Radix Sort"};
-
-    const SortFunction sortFuncs[] = {MergeSort, HeapSort,
-        QuickSort, CountingSort, RadixSort};
+    const SortAlgorithm sortFuncs[] = {InsertionSort, MergeSort, HeapSort,
+                                       QuickSort, CountingSort, RadixSort,
+                                       BucketSort};
 
     timeval start, end;
     int *tmpArray;
@@ -117,7 +111,7 @@ void RunBenchmarks() {
         for (int i = 0; i < NUM_SAMPLES; ++i)
             randArrays[i] = RandomArray(N, MAX_KEY_VALUE);
 
-        // Benchmark the function
+        // Benchmark the algorithm
         for (int j = 0; j < NUM_SORT_FUNCS; ++j) {
             cout << sortFuncNames[j];
             for (int k = 0; k < NUM_SAMPLES; ++k) {
@@ -436,7 +430,7 @@ int DigitValue(int num, int digit) {
 // ========================================================================== //
 // Method Name - CountingSort
 //      Overloaded implementation of the counting sort algorithm that uses
-//      the specified digit of each element as the key.
+//      the specified digit of each element as the key. Used by radix sort.
 // ========================================================================== //
 void CountingSort(int *ary, int size, int digit) {
     const int NUM_DIGITS = 10;
@@ -480,9 +474,43 @@ void RadixSort(int *ary, int size) {
 }
 
 // ========================================================================== //
+// Method Name - InsertionSort
+//      Overloaded implementation of insertion sort for vectors. Used by
+//      bucket sort.
+// ========================================================================== //
+void InsertionSort(vector<int> &v) {
+    for (int i = 1; i < v.size(); ++i) {
+        int key = v[i];
+        for (int j = i - 1; j >= 0 && v[j] > key; --j) {
+            v[j + 1] = v[j];
+            v[j] = key;
+        }
+    }
+}
+
+// ========================================================================== //
 // Method Name - BucketSort
 //      Implementation of the bucket sort algorithm for integers.
 // ========================================================================== //
 void BucketSort(int *ary, int size) {
-    //TODO: Bucket Sort
+    int max = MaxValue(ary, size);
+
+    vector<int> *buckets = new vector<int>[size];
+
+    // Place item into buckets
+    for (int i = 0; i < size; i++) {
+        int toBucket = size * (ary[i] / (double) max) - 1;
+        buckets[toBucket].push_back(ary[i]);
+    }
+
+    // Sort each bucket and put it into the original array
+    int index = -1;
+    for (int i = 0; i < size; i++) {
+        InsertionSort(buckets[i]);
+        for (int j = 0; j < buckets[i].size(); j++) {
+            ary[++index] = buckets[i][j];
+        }
+    }
+
+    delete []buckets;
 }
