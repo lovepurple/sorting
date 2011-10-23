@@ -144,7 +144,7 @@ void PrintArray(int *ary, int size) {
 
 // ========================================================================== //
 // Method Name - RandomArray
-//      Returns and integer array based on the size and max key value.
+//      Returns an integer array based on the size and max key value.
 // ========================================================================== //
 int *RandomArray(int size, int maxKeyValue) {
     int *randArray = new int[size];
@@ -381,7 +381,7 @@ void CountingSort(int *ary, int size) {
 
     // Count occurrences
     for (int i = 0; i < size; ++i)
-        counts[ary[i]]++;
+        ++counts[ary[i]];
 
     // Add previous indexes to get spot in final array
     for (int i = 1; i < k; ++i)
@@ -498,16 +498,16 @@ void BucketSort(int *ary, int size) {
     vector<int> *buckets = new vector<int>[size];
 
     // Place item into buckets
-    for (int i = 0; i < size; i++) {
+    for (int i = 0; i < size; ++i) {
         int toBucket = size * (ary[i] / (double) max) - 1;
         buckets[toBucket].push_back(ary[i]);
     }
 
     // Sort each bucket and put it into the original array
     int index = -1;
-    for (int i = 0; i < size; i++) {
+    for (int i = 0; i < size; ++i) {
         InsertionSort(buckets[i]);
-        for (int j = 0; j < buckets[i].size(); j++) {
+        for (int j = 0; j < buckets[i].size(); ++j) {
             ary[++index] = buckets[i][j];
         }
     }
