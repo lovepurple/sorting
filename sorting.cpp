@@ -18,6 +18,7 @@
 
 #include <iostream>
 #include <cstdlib>
+#include <stdio.h>
 #include <string>
 #include <vector>
 #include <sys/time.h>
@@ -181,6 +182,7 @@ void PrintTimeDiff(timeval start, timeval end) {
     long utime = ((seconds * 1000000) + useconds);
 
     cout << "\t" << utime;
+    fflush(stdout);
 }
 
 // ========================================================================== //
